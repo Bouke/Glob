@@ -91,7 +91,7 @@ public class Glob: Collection {
         }
 
         paths = Array(Set(paths)).sorted { lhs, rhs in
-            lhs.compare(rhs) != NSComparisonResult.orderedDescending
+            lhs.compare(rhs) != ComparisonResult.orderedDescending
         }
 
         clearCaches()
@@ -115,7 +115,7 @@ public class Glob: Collection {
         let firstPart = parts.removeFirst()
         var lastPart = parts.joined(separator: "**")
 
-        let fileManager = NSFileManager.default()
+        let fileManager = FileManager.default()
 
         var directories: [String]
 
@@ -162,7 +162,7 @@ public class Glob: Collection {
         }
 
         var isDirectoryBool = ObjCBool(false)
-        isDirectory = NSFileManager.default().fileExists(atPath: path, isDirectory: &isDirectoryBool) && isDirectoryBool
+        isDirectory = FileManager.default().fileExists(atPath: path, isDirectory: &isDirectoryBool) && isDirectoryBool
         isDirectoryCache[path] = isDirectory!
 
         return isDirectory!
