@@ -115,7 +115,7 @@ public class Glob: Collection {
         let firstPart = parts.removeFirst()
         var lastPart = parts.joined(separator: "**")
 
-        let fileManager = FileManager.default()
+        let fileManager = FileManager.default
 
         var directories: [String]
 
@@ -162,7 +162,7 @@ public class Glob: Collection {
         }
 
         var isDirectoryBool = ObjCBool(false)
-        isDirectory = FileManager.default().fileExists(atPath: path, isDirectory: &isDirectoryBool) && isDirectoryBool
+        isDirectory = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectoryBool) && isDirectoryBool
         isDirectoryCache[path] = isDirectory!
 
         return isDirectory!
