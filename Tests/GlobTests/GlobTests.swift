@@ -18,7 +18,7 @@ class GlobTests : XCTestCase {
     override func setUp() {
         super.setUp()
         
-        var tmpDirTmpl = "/tmp/glob-test.XXXXX".cString(using: NSUTF8StringEncoding)!
+        var tmpDirTmpl = "/tmp/glob-test.XXXXX".cString(using: .utf8)!
         self.tmpDir = String(validatingUTF8: mkdtemp(&tmpDirTmpl))!
         
         let flags = S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH
