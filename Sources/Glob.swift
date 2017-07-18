@@ -129,12 +129,8 @@ public class Glob: Collection {
 		do {
 			directories = try fileManager.subpathsOfDirectory(atPath: firstPart).flatMap { subpath in
 				let fullPath = NSString(string: firstPart).appendingPathComponent(subpath)
-                var isDirectory = ObjCBool(false)
-                if fileManager.fileExists(atPath: fullPath, isDirectory: &isDirectory) && isDirectory.boolValue {
+				guard isDirectory(path: fullPath) else { return nil }
 				return fullPath
-                } else {
-                    return nil
-                }
 			}
 		} catch {
 			directories = []
@@ -168,10 +164,13 @@ public class Glob: Collection {
 			return isDirectory
 		}
 		
-        var isDirectoryBool = ObjCBool(false)
-        isDirectory = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectoryBool) && isDirectoryBool.boolValue
-        isDirectoryCache[path] = isDirectory!
-
+		let u = URL(fileURLWithPath: path)
+		if let v = try? u.resourceValues(forKeys: [.isDirectoryKey]){
+			isDirectory = v.isDirectory
+		} else {
+			isDirectory = false
+		}
+		isDirectoryCache[path] = isDirectory
 		return isDirectory!
 	}
 	
