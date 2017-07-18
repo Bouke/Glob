@@ -1,5 +1,5 @@
 import XCTest
-@testable import GlobTestSuite
+@testable import GlobTests
 
 XCTMain([
 	 testCase(GlobTests.allTests),
