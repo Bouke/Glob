@@ -52,6 +52,13 @@ public class Glob: Collection {
 
         // If false and the last characters of the pattern are "**/" then only directories are returned in the results.
         let includesFilesInResultsIfTrailingSlash: Bool
+
+        public init(supportsGlobstar: Bool, includesFilesFromRootOfGlobstar: Bool, includesDirectoriesInResults: Bool, includesFilesInResultsIfTrailingSlash: Bool){
+            self.supportsGlobstar = supportsGlobstar
+            self.includesFilesFromRootOfGlobstar = includesFilesFromRootOfGlobstar
+            self.includesDirectoriesInResults = includesDirectoriesInResults
+            self.includesFilesInResultsIfTrailingSlash = includesFilesInResultsIfTrailingSlash
+        }
     }
 
     static var defaultBehavior = GlobBehaviorBashV4
@@ -122,12 +129,8 @@ public class Glob: Collection {
         do {
             directories = try fileManager.subpathsOfDirectory(atPath: firstPart).flatMap { subpath in
                 let fullPath = NSString(string: firstPart).appendingPathComponent(subpath)
-                var isDirectory = ObjCBool(false)
-                if fileManager.fileExists(atPath: fullPath, isDirectory: &isDirectory) && isDirectory.boolValue {
-                    return fullPath
-                } else {
-                    return nil
-                }
+                guard isDirectory(path: fullPath) else { return nil }
+                return fullPath
             }
         } catch {
             directories = []
@@ -161,10 +164,13 @@ public class Glob: Collection {
             return isDirectory
         }
 
-        var isDirectoryBool = ObjCBool(false)
-        isDirectory = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectoryBool) && isDirectoryBool.boolValue
-        isDirectoryCache[path] = isDirectory!
-
+        let u = URL(fileURLWithPath: path)
+        if let v = try? u.resourceValues(forKeys: [.isDirectoryKey]){
+            isDirectory = v.isDirectory
+        } else {
+            isDirectory = false
+        }
+        isDirectoryCache[path] = isDirectory
         return isDirectory!
     }
 
@@ -174,8 +180,12 @@ public class Glob: Collection {
 
     private func populateFiles(gt: glob_t, includeFiles: Bool) {
         let includeDirectories = behavior.includesDirectoriesInResults
-
-        for i in 0..<Int(gt.gl_matchc) {
+        #if os(Linux)
+            let matchesCount = Int(gt.gl_pathc)
+        #else
+            let matchesCount = Int(gt.gl_matchc)
+        #endif
+        for i in 0..<matchesCount {
             if let path = String(validatingUTF8: gt.gl_pathv[i]!) {
                 if !includeFiles || !includeDirectories {
                     let isDirectory = self.isDirectory(path: path)
