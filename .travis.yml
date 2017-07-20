@@ -9,3 +9,5 @@ matrix:
     - os: linux
       dist: trusty
       sudo: required
+  allow_failures:
+    - os: linux
