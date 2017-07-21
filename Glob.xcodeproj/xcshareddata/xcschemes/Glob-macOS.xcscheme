@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "707F487E1F21B61900A6094F"
-               BuildableName = "Glob.framework"
-               BlueprintName = "Glob"
+               BlueprintIdentifier = "7048DB601F224988005133E2"
+               BuildableName = "Glob-macOS.framework"
+               BlueprintName = "Glob-macOS"
                ReferencedContainer = "container:Glob.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,9 +45,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "707F487E1F21B61900A6094F"
-            BuildableName = "Glob.framework"
-            BlueprintName = "Glob"
+            BlueprintIdentifier = "7048DB601F224988005133E2"
+            BuildableName = "Glob-macOS.framework"
+            BlueprintName = "Glob-macOS"
             ReferencedContainer = "container:Glob.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -63,9 +63,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "707F487E1F21B61900A6094F"
-            BuildableName = "Glob.framework"
-            BlueprintName = "Glob"
+            BlueprintIdentifier = "7048DB601F224988005133E2"
+            BuildableName = "Glob-macOS.framework"
+            BlueprintName = "Glob-macOS"
             ReferencedContainer = "container:Glob.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

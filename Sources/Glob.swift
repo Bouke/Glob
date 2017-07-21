@@ -163,13 +163,13 @@ public class Glob: Collection {
             return isDirectory
         }
 
-        #if os(macOS)
+        #if os(macOS) || os(iOS)
             var isDirectoryBool = ObjCBool(false)
         #else
             var isDirectoryBool = false
         #endif
         var isDirectory = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectoryBool)
-        #if os(macOS)
+        #if os(macOS) || os(iOS)
             isDirectory = isDirectory && isDirectoryBool.boolValue
         #else
             isDirectory = isDirectory && isDirectoryBool
