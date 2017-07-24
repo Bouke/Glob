@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "707F487E1F21B61900A6094F"
-               BuildableName = "Glob-iOS.framework"
+               BuildableName = "Glob.framework"
                BlueprintName = "Glob-iOS"
                ReferencedContainer = "container:Glob.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "707F487E1F21B61900A6094F"
-            BuildableName = "Glob-iOS.framework"
+            BuildableName = "Glob.framework"
             BlueprintName = "Glob-iOS"
             ReferencedContainer = "container:Glob.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "707F487E1F21B61900A6094F"
-            BuildableName = "Glob-iOS.framework"
+            BuildableName = "Glob.framework"
             BlueprintName = "Glob-iOS"
             ReferencedContainer = "container:Glob.xcodeproj">
          </BuildableReference>
