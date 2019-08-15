@@ -61,7 +61,6 @@ public class Glob: Collection {
         }
     }
 
-    static var defaultBehavior = GlobBehaviorBashV4
 
     private var isDirectoryCache = [String: Bool]()
 
@@ -70,7 +69,7 @@ public class Glob: Collection {
     public var startIndex: Int { return paths.startIndex }
     public var endIndex: Int   { return paths.endIndex   }
 
-    public init(pattern: String, behavior: Behavior = Glob.defaultBehavior) {
+    public init(pattern: String, behavior: Behavior = GlobBehaviorBashV4) {
 
         self.behavior = behavior
 
@@ -164,15 +163,15 @@ public class Glob: Collection {
         }
 
         #if os(macOS)
-            var isDirectoryBool = ObjCBool(false)
+        var isDirectoryBool = ObjCBool(false)
         #else
-            var isDirectoryBool = false
+        var isDirectoryBool = false
         #endif
         var isDirectory = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectoryBool)
         #if os(macOS)
-            isDirectory = isDirectory && isDirectoryBool.boolValue
+        isDirectory = isDirectory && isDirectoryBool.boolValue
         #else
-            isDirectory = isDirectory && isDirectoryBool
+        isDirectory = isDirectory && isDirectoryBool
         #endif
 
         isDirectoryCache[path] = isDirectory
@@ -187,9 +186,9 @@ public class Glob: Collection {
     private func populateFiles(gt: glob_t, includeFiles: Bool) {
         let includeDirectories = behavior.includesDirectoriesInResults
         #if os(Linux)
-            let matchesCount = Int(gt.gl_pathc)
+        let matchesCount = Int(gt.gl_pathc)
         #else
-            let matchesCount = Int(gt.gl_matchc)
+        let matchesCount = Int(gt.gl_matchc)
         #endif
         for i in 0..<matchesCount {
             if let path = String(validatingUTF8: gt.gl_pathv[i]!) {
