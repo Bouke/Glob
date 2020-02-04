@@ -1,12 +1,15 @@
-language:
-  - swift
+language: generic
+sudo: required
 script: swift test
 matrix:
   include:
     - os: osx
       osx_image: xcode11.3
     - os: linux
-      dist: bionic
-      sudo: required
+      dist: trusty
+      before_install:
+        - wget https://swift.org/builds/swift-5.0-release/ubuntu1404/swift-5.0-RELEASE/swift-5.0-RELEASE-ubuntu14.04.tar.gz
+        - tar xzf swift-5.0-RELEASE-ubuntu14.04.tar.gz
+        - export PATH=`pwd`/swift-5.0-RELEASE-ubuntu14.04/usr/bin:"${PATH}"
   allow_failures:
     - os: linux
