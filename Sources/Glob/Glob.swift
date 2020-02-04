@@ -162,17 +162,9 @@ public class Glob: Collection {
             return isDirectory
         }
 
-        #if os(macOS)
         var isDirectoryBool = ObjCBool(false)
-        #else
-        var isDirectoryBool = false
-        #endif
         var isDirectory = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectoryBool)
-        #if os(macOS)
         isDirectory = isDirectory && isDirectoryBool.boolValue
-        #else
-        isDirectory = isDirectory && isDirectoryBool
-        #endif
 
         isDirectoryCache[path] = isDirectory
 
