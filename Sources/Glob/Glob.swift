@@ -65,7 +65,7 @@ public class Glob: Collection {
     private var isDirectoryCache = [String: Bool]()
 
     public let behavior: Behavior
-    var paths = [String]()
+    public private(set) var paths = [String]()
     public var startIndex: Int { return paths.startIndex }
     public var endIndex: Int   { return paths.endIndex   }
 
