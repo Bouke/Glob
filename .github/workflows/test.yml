@@ -1,0 +1,40 @@
+name: Test
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+jobs:
+  Ubuntu:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        swift: ['5.1', '5.2', '5.3']
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Swift ${{ matrix.swift }}
+        run: |
+          wget --no-verbose https://swift.org/builds/swift-${{ matrix.swift }}-release/ubuntu1804/swift-${{ matrix.swift }}-RELEASE/swift-${{ matrix.swift }}-RELEASE-ubuntu18.04.tar.gz
+          tar xzf swift-${{ matrix.swift }}-RELEASE-ubuntu18.04.tar.gz
+          echo `pwd`/swift-${{ matrix.swift }}-RELEASE-ubuntu18.04/usr/bin >> $GITHUB_PATH
+      - name: Verify Swift version
+        run: swift -version | grep ${{ matrix.swift }}
+      - name: Run Tests
+        run: swift test
+  macOS:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        swift: ['5.1', '5.2', '5.3']
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Swift 5.1
+        run: sudo xcode-select -s /Applications/Xcode_11.3.1.app/Contents/Developer
+        if: matrix.swift == '5.1'
+      - name: Setup Swift 5.2
+        run: sudo xcode-select -s /Applications/Xcode_11.6.app/Contents/Developer
+        if: matrix.swift == '5.2'
+      - name: Setup Swift 5.3
+        run: sudo xcode-select -s /Applications/Xcode_12_beta.app/Contents/Developer
+        if: matrix.swift == '5.3'
+      - name: Run Tests
+        run: swift test
