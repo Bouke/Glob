@@ -3,7 +3,7 @@ Glob
 
 Glob for Swift 5.
 
-[![Build Status](https://travis-ci.org/Bouke/Glob.svg?branch=master)](https://travis-ci.org/Bouke/Glob)
+![Build Status](https://github.com/Bouke/Glob/workflows/Test/badge.svg)
 
 # Usage
 
