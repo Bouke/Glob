@@ -43,7 +43,10 @@ public class Glob: Collection {
         // If false and the last characters of the pattern are "**/" then only directories are returned in the results.
         let includesFilesInResultsIfTrailingSlash: Bool
 
-        public init(supportsGlobstar: Bool, includesFilesFromRootOfGlobstar: Bool, includesDirectoriesInResults: Bool, includesFilesInResultsIfTrailingSlash: Bool){
+        public init(supportsGlobstar: Bool,
+                    includesFilesFromRootOfGlobstar: Bool,
+                    includesDirectoriesInResults: Bool,
+                    includesFilesInResultsIfTrailingSlash: Bool) {
             self.supportsGlobstar = supportsGlobstar
             self.includesFilesFromRootOfGlobstar = includesFilesFromRootOfGlobstar
             self.includesDirectoriesInResults = includesDirectoriesInResults
@@ -72,9 +75,9 @@ public class Glob: Collection {
     public let behavior: Behavior
     var paths = [String]()
     public var startIndex: Int { return paths.startIndex }
-    public var endIndex: Int   { return paths.endIndex   }
+    public var endIndex: Int { return paths.endIndex }
 
-    public init(pattern: String, behavior: Behavior = GlobBehaviorBashV4) {
+    public init(pattern: String, behavior: Behavior = .BashV4) {
 
         self.behavior = behavior
 
@@ -156,7 +159,7 @@ public class Glob: Collection {
             lastPart = "*"
         }
         for directory in directories {
-            let partiallyResolvedPattern : String
+            let partiallyResolvedPattern: String
             if directory.isEmpty {
                 partiallyResolvedPattern = lastPart.starts(with: "/") ? String(lastPart.dropFirst()) : lastPart
             } else {

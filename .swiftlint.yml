@@ -1,0 +1,6 @@
+identifier_name:
+  excluded:
+    - i # used for index in simple loops
+    - gt # used to reference glob_t structures
+trailing_comma:
+  mandatory_comma: true
