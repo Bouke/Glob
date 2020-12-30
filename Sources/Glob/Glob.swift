@@ -7,26 +7,16 @@
 
 import Foundation
 
+// swiftlint:disable identifier_name
+@available(*, deprecated, message: "Use `Glob.Behavior.BashV3` instead")
+public let GlobBehaviorBashV3 = Glob.Behavior.BashV3
 
-public let GlobBehaviorBashV3 = Glob.Behavior(
-    supportsGlobstar: false,
-    includesFilesFromRootOfGlobstar: false,
-    includesDirectoriesInResults: true,
-    includesFilesInResultsIfTrailingSlash: false
-)
-public let GlobBehaviorBashV4 = Glob.Behavior(
-    supportsGlobstar: true, // Matches Bash v4 with "shopt -s globstar" option
-    includesFilesFromRootOfGlobstar: true,
-    includesDirectoriesInResults: true,
-    includesFilesInResultsIfTrailingSlash: false
-)
-public let GlobBehaviorGradle = Glob.Behavior(
-    supportsGlobstar: true,
-    includesFilesFromRootOfGlobstar: true,
-    includesDirectoriesInResults: false,
-    includesFilesInResultsIfTrailingSlash: true
-)
+@available(*, deprecated, message: "Use `Glob.Behavior.BashV4` instead")
+public let GlobBehaviorBashV4 = Glob.Behavior.BashV4
 
+@available(*, deprecated, message: "Use `Glob.Behavior.Gradle` instead")
+public let GlobBehaviorGradle = Glob.Behavior.Gradle
+// swiftlint:enable identifier_name
 
 /**
  Finds files on the file system using pattern matching.
@@ -59,8 +49,23 @@ public class Glob: Collection {
             self.includesDirectoriesInResults = includesDirectoriesInResults
             self.includesFilesInResultsIfTrailingSlash = includesFilesInResultsIfTrailingSlash
         }
-    }
 
+        public static var BashV3 = Glob.Behavior(supportsGlobstar: false,
+                                                 includesFilesFromRootOfGlobstar: false,
+                                                 includesDirectoriesInResults: true,
+                                                 includesFilesInResultsIfTrailingSlash: false)
+
+        // Matches Bash v4 with "shopt -s globstar" option
+        public static var BashV4 = Glob.Behavior(supportsGlobstar: true,
+                                                 includesFilesFromRootOfGlobstar: true,
+                                                 includesDirectoriesInResults: true,
+                                                 includesFilesInResultsIfTrailingSlash: false)
+
+        public static var Gradle = Glob.Behavior(supportsGlobstar: true,
+                                                 includesFilesFromRootOfGlobstar: true,
+                                                 includesDirectoriesInResults: false,
+                                                 includesFilesInResultsIfTrailingSlash: true)
+    }
 
     private var isDirectoryCache = [String: Bool]()
 
