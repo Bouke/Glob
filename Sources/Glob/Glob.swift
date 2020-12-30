@@ -136,7 +136,7 @@ public class Glob: Collection {
         let searchPath = firstPart.isEmpty ? fileManager.currentDirectoryPath : firstPart
         do {
             directories = try fileManager.subpathsOfDirectory(atPath: searchPath).compactMap { subpath in
-                let fullPath = NSString(string: firstPart).appendingPathComponent(subpath)
+                let fullPath = joinPaths(firstPart, subpath)
                 guard isDirectory(path: fullPath) else { return nil }
                 return fullPath
             }
@@ -163,7 +163,7 @@ public class Glob: Collection {
             if directory.isEmpty {
                 partiallyResolvedPattern = lastPart.starts(with: "/") ? String(lastPart.dropFirst()) : lastPart
             } else {
-                partiallyResolvedPattern = NSString(string: directory).appendingPathComponent(lastPart)
+                partiallyResolvedPattern = joinPaths(directory, lastPart)
             }
             results.append(contentsOf: expandGlobstar(pattern: partiallyResolvedPattern))
         }
@@ -205,9 +205,22 @@ public class Glob: Collection {
                     }
                 }
 
+                #if os(Linux)
+                paths.append(path.replacingOccurrences(of: "//", with: "/"))
+                #else
                 paths.append(path)
+                #endif
             }
         }
+    }
+
+    private func joinPaths(_ path0: String, _ path1: String) -> String {
+        let path = NSString(string: path0).appendingPathComponent(path1)
+        #if os(Linux)
+        return path.replacingOccurrences(of: "//", with: "/")
+        #else
+        return path
+        #endif
     }
 
     // MARK: Subscript Support
