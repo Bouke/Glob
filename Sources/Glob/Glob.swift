@@ -205,7 +205,11 @@ public class Glob: Collection {
                     }
                 }
 
+                #if os(Linux)
+                paths.append(path.replacingOccurrences(of: "//", with: "/"))
+                #else
                 paths.append(path)
+                #endif
             }
         }
     }
