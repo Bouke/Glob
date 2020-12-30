@@ -45,6 +45,27 @@ class GlobTests : XCTestCase {
         }
         super.tearDown()
     }
+
+    private func test(pattern: String, behavior: Glob.Behavior, expected: [String]) {
+        testWithPrefix("\(tmpDir.path)/", pattern: pattern, behavior: behavior, expected: expected)
+
+        let originalPath = FileManager.default.currentDirectoryPath
+        FileManager.default.changeCurrentDirectoryPath(tmpDir.path)
+        defer {
+            FileManager.default.changeCurrentDirectoryPath(originalPath)
+        }
+
+        testWithPrefix("./", pattern: pattern, behavior: behavior, expected: expected)
+        testWithPrefix("", pattern: pattern, behavior: behavior, expected: expected.filter { !$0.isEmpty })
+    }
+
+    private func testWithPrefix(_ prefix: String, pattern: String, behavior: Glob.Behavior, expected: [String]) {
+        let pattern = "\(prefix)\(pattern)"
+        let glob = Glob(pattern: pattern, behavior: behavior)
+        XCTAssertEqual(glob.paths, //.sorted(),
+                       expected.map { "\(prefix)\($0)" },
+                       "pattern \"\(pattern)\" failed with prefix \"\(prefix)\"") //.sorted())
+    }
     
     func testBraces() {
         let pattern = "\(tmpDir.path)/ba{r,y,z}"
@@ -101,84 +122,83 @@ class GlobTests : XCTestCase {
     
     func testGlobstarBashV3NoSlash() {
         // Should be the equivalent of "ls -d -1 /(tmpdir)/**"
-        let pattern = "\(tmpDir.path)/**"
-        let glob = Glob(pattern: pattern, behavior: GlobBehaviorBashV3)
-        XCTAssertEqual(glob.paths, ["\(tmpDir.path)/bar", "\(tmpDir.path)/baz", "\(tmpDir.path)/dir1/", "\(tmpDir.path)/foo"])
+        test(pattern: "**",
+             behavior: GlobBehaviorBashV3,
+             expected: ["bar", "baz", "dir1/", "foo"])
     }
     
     func testGlobstarBashV3WithSlash() {
         // Should be the equivalent of "ls -d -1 /(tmpdir)/**/"
-        let pattern = "\(tmpDir.path)/**/"
-        let glob = Glob(pattern: pattern, behavior: GlobBehaviorBashV3)
-        XCTAssertEqual(glob.paths, ["\(tmpDir.path)/dir1/"])
+        test(pattern: "**/",
+             behavior: GlobBehaviorBashV3,
+             expected: ["dir1/"])
     }
     
     func testGlobstarBashV3WithSlashAndWildcard() {
         // Should be the equivalent of "ls -d -1 /(tmpdir)/**/*"
-        let pattern = "\(tmpDir.path)/**/*"
-        let glob = Glob(pattern: pattern, behavior: GlobBehaviorBashV3)
-        XCTAssertEqual(glob.paths, ["\(tmpDir.path)/dir1/dir2/", "\(tmpDir.path)/dir1/file1.ext"])
+        test(pattern: "**/*",
+             behavior: GlobBehaviorBashV3,
+             expected: ["dir1/dir2/", "dir1/file1.ext"])
     }
     
     func testDoubleGlobstarBashV3() {
-        let pattern = "\(tmpDir.path)/**/dir2/**/*"
-        let glob = Glob(pattern: pattern, behavior: GlobBehaviorBashV3)
-        XCTAssertEqual(glob.paths, ["\(tmpDir.path)/dir1/dir2/dir3/file2.ext"])
+        test(pattern: "**/dir2/**/*",
+             behavior: GlobBehaviorBashV3,
+             expected: ["dir1/dir2/dir3/file2.ext"])
     }
     
     // MARK: - Globstar - Bash v4
     
     func testGlobstarBashV4NoSlash() {
         // Should be the equivalent of "ls -d -1 /(tmpdir)/**"
-        let pattern = "\(tmpDir.path)/**"
-        let glob = Glob(pattern: pattern, behavior: GlobBehaviorBashV4)
-        XCTAssertEqual(glob.paths, [
-            "\(tmpDir.path)/",
-            "\(tmpDir.path)/bar",
-            "\(tmpDir.path)/baz",
-            "\(tmpDir.path)/dir1/",
-            "\(tmpDir.path)/dir1/dir2/",
-            "\(tmpDir.path)/dir1/dir2/dir3/",
-            "\(tmpDir.path)/dir1/dir2/dir3/file2.ext",
-            "\(tmpDir.path)/dir1/file1.ext",
-            "\(tmpDir.path)/foo"
+        test(pattern: "**",
+             behavior: GlobBehaviorBashV4,
+             expected: ["",
+                        "bar",
+                        "baz",
+                        "dir1/",
+                        "dir1/dir2/",
+                        "dir1/dir2/dir3/",
+                        "dir1/dir2/dir3/file2.ext",
+                        "dir1/file1.ext",
+                        "foo"
         ])
     }
     
     func testGlobstarBashV4WithSlash() {
         // Should be the equivalent of "ls -d -1 /(tmpdir)/**/"
-        let pattern = "\(tmpDir.path)/**/"
-        let glob = Glob(pattern: pattern, behavior: GlobBehaviorBashV4)
-        XCTAssertEqual(glob.paths, [
-            "\(tmpDir.path)/",
-            "\(tmpDir.path)/dir1/",
-            "\(tmpDir.path)/dir1/dir2/",
-            "\(tmpDir.path)/dir1/dir2/dir3/",
+        test(pattern: "**/",
+             behavior: GlobBehaviorBashV4,
+             expected: [
+                "",
+                "dir1/",
+                "dir1/dir2/",
+                "dir1/dir2/dir3/",
         ])
     }
     
     func testGlobstarBashV4WithSlashAndWildcard() {
         // Should be the equivalent of "ls -d -1 /(tmpdir)/**/*"
-        let pattern = "\(tmpDir.path)/**/*"
-        let glob = Glob(pattern: pattern, behavior: GlobBehaviorBashV4)
-        XCTAssertEqual(glob.paths, [
-            "\(tmpDir.path)/bar",
-            "\(tmpDir.path)/baz",
-            "\(tmpDir.path)/dir1/",
-            "\(tmpDir.path)/dir1/dir2/",
-            "\(tmpDir.path)/dir1/dir2/dir3/",
-            "\(tmpDir.path)/dir1/dir2/dir3/file2.ext",
-            "\(tmpDir.path)/dir1/file1.ext",
-            "\(tmpDir.path)/foo",
+        test(pattern: "**/*",
+             behavior: GlobBehaviorBashV4,
+             expected: [
+                "bar",
+                "baz",
+                "dir1/",
+                "dir1/dir2/",
+                "dir1/dir2/dir3/",
+                "dir1/dir2/dir3/file2.ext",
+                "dir1/file1.ext",
+                "foo",
         ])
     }
     
     func testDoubleGlobstarBashV4() {
-        let pattern = "\(tmpDir.path)/**/dir2/**/*"
-        let glob = Glob(pattern: pattern, behavior: GlobBehaviorBashV4)
-        XCTAssertEqual(glob.paths, [
-            "\(tmpDir.path)/dir1/dir2/dir3/",
-            "\(tmpDir.path)/dir1/dir2/dir3/file2.ext",
+        test(pattern: "**/dir2/**/*",
+             behavior: GlobBehaviorBashV4,
+             expected: [
+                "dir1/dir2/dir3/",
+                "dir1/dir2/dir3/file2.ext",
         ])
     }
     
@@ -191,14 +211,14 @@ class GlobTests : XCTestCase {
         // }
         //
         // Note that the sort order currently matches Bash and not Gradle
-        let pattern = "\(tmpDir.path)/**"
-        let glob = Glob(pattern: pattern, behavior: GlobBehaviorGradle)
-        XCTAssertEqual(glob.paths, [
-            "\(tmpDir.path)/bar",
-            "\(tmpDir.path)/baz",
-            "\(tmpDir.path)/dir1/dir2/dir3/file2.ext",
-            "\(tmpDir.path)/dir1/file1.ext",
-            "\(tmpDir.path)/foo",
+        test(pattern: "**",
+             behavior: GlobBehaviorGradle,
+             expected: [
+                "bar",
+                "baz",
+                "dir1/dir2/dir3/file2.ext",
+                "dir1/file1.ext",
+                "foo",
         ])
     }
     
@@ -209,14 +229,14 @@ class GlobTests : XCTestCase {
         // }
         //
         // Note that the sort order currently matches Bash and not Gradle
-        let pattern = "\(tmpDir.path)/**/"
-        let glob = Glob(pattern: pattern, behavior: GlobBehaviorGradle)
-        XCTAssertEqual(glob.paths, [
-            "\(tmpDir.path)/bar",
-            "\(tmpDir.path)/baz",
-            "\(tmpDir.path)/dir1/dir2/dir3/file2.ext",
-            "\(tmpDir.path)/dir1/file1.ext",
-            "\(tmpDir.path)/foo",
+        test(pattern: "**/",
+             behavior: GlobBehaviorGradle,
+             expected: [
+                "bar",
+                "baz",
+                "dir1/dir2/dir3/file2.ext",
+                "dir1/file1.ext",
+                "foo",
         ])
     }
     
@@ -227,14 +247,14 @@ class GlobTests : XCTestCase {
         // }
         //
         // Note that the sort order currently matches Bash and not Gradle
-        let pattern = "\(tmpDir.path)/**/*"
-        let glob = Glob(pattern: pattern, behavior: GlobBehaviorGradle)
-        XCTAssertEqual(glob.paths, [
-            "\(tmpDir.path)/bar",
-            "\(tmpDir.path)/baz",
-            "\(tmpDir.path)/dir1/dir2/dir3/file2.ext",
-            "\(tmpDir.path)/dir1/file1.ext",
-            "\(tmpDir.path)/foo",
+        test(pattern: "**/*",
+             behavior: GlobBehaviorGradle,
+             expected: [
+                "bar",
+                "baz",
+                "dir1/dir2/dir3/file2.ext",
+                "dir1/file1.ext",
+                "foo",
         ])
     }
     
@@ -245,10 +265,10 @@ class GlobTests : XCTestCase {
         // }
         //
         // Note that the sort order currently matches Bash and not Gradle
-        let pattern = "\(tmpDir.path)/**/dir2/**/*"
-        let glob = Glob(pattern: pattern, behavior: GlobBehaviorGradle)
-        XCTAssertEqual(glob.paths, [
-            "\(tmpDir.path)/dir1/dir2/dir3/file2.ext",
+        test(pattern: "**/dir2/**/*",
+             behavior: GlobBehaviorGradle,
+             expected: [
+                "dir1/dir2/dir3/file2.ext",
         ])
     }
 }
