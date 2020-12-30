@@ -48,6 +48,15 @@ class GlobTests : XCTestCase {
 
     private func test(pattern: String, behavior: Glob.Behavior, expected: [String]) {
         testWithPrefix("\(tmpDir.path)/", pattern: pattern, behavior: behavior, expected: expected)
+
+        let originalPath = FileManager.default.currentDirectoryPath
+        FileManager.default.changeCurrentDirectoryPath(tmpDir.path)
+        defer {
+            FileManager.default.changeCurrentDirectoryPath(originalPath)
+        }
+
+        testWithPrefix("./", pattern: pattern, behavior: behavior, expected: expected)
+        testWithPrefix("", pattern: pattern, behavior: behavior, expected: expected)
     }
 
     private func testWithPrefix(_ prefix: String, pattern: String, behavior: Glob.Behavior, expected: [String]) {
