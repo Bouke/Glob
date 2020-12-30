@@ -125,8 +125,9 @@ public class Glob: Collection {
 
         var directories: [String]
 
+        let searchPath = firstPart.isEmpty ? fileManager.currentDirectoryPath : firstPart
         do {
-            directories = try fileManager.subpathsOfDirectory(atPath: firstPart).compactMap { subpath in
+            directories = try fileManager.subpathsOfDirectory(atPath: searchPath).compactMap { subpath in
                 let fullPath = NSString(string: firstPart).appendingPathComponent(subpath)
                 guard isDirectory(path: fullPath) else { return nil }
                 return fullPath
@@ -150,7 +151,12 @@ public class Glob: Collection {
             lastPart = "*"
         }
         for directory in directories {
-            let partiallyResolvedPattern = NSString(string: directory).appendingPathComponent(lastPart)
+            let partiallyResolvedPattern : String
+            if directory.isEmpty {
+                partiallyResolvedPattern = lastPart.starts(with: "/") ? String(lastPart.dropFirst()) : lastPart
+            } else {
+                partiallyResolvedPattern = NSString(string: directory).appendingPathComponent(lastPart)
+            }
             results.append(contentsOf: expandGlobstar(pattern: partiallyResolvedPattern))
         }
 

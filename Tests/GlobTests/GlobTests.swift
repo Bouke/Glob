@@ -56,13 +56,15 @@ class GlobTests : XCTestCase {
         }
 
         testWithPrefix("./", pattern: pattern, behavior: behavior, expected: expected)
-        testWithPrefix("", pattern: pattern, behavior: behavior, expected: expected)
+        testWithPrefix("", pattern: pattern, behavior: behavior, expected: expected.filter { !$0.isEmpty })
     }
 
     private func testWithPrefix(_ prefix: String, pattern: String, behavior: Glob.Behavior, expected: [String]) {
         let pattern = "\(prefix)\(pattern)"
         let glob = Glob(pattern: pattern, behavior: behavior)
-        XCTAssertEqual(glob.paths, expected.map { "\(prefix)\($0)" })
+        XCTAssertEqual(glob.paths, //.sorted(),
+                       expected.map { "\(prefix)\($0)" },
+                       "pattern \"\(pattern)\" failed with prefix \"\(prefix)\"") //.sorted())
     }
     
     func testBraces() {
